@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Success Stories</title>
+
+    <style>
+        /* --- Basic Reset & Setup --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f8f8;
+        }
+        body.modal-open {
+            overflow: hidden;
+        }
+
+        /* --- Main Section Wrapper --- */
+        .success-stories-section {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        /* --- Section Header Styling --- */
+        .section-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+            gap: 20px;
+        }
+        .header-content { flex: 1; min-width: 300px; }
+        .header-content .title {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #111;
+            margin: 0 0 10px 0;
+        }
+        .header-content .subtitle {
+            font-size: 1em;
+            color: #555;
+            line-height: 1.5;
+            max-width: 450px;
+            margin: 0;
+        }
+        .view-all-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s;
+            height: fit-content;
+        }
+        .view-all-button .arrow-icon { font-size: 1.2em; line-height: 1; }
+
+        /* --- STAGGERED GRID (MASONRY) LAYOUT --- */
+        .stories-grid {
+            column-count: 3;
+            column-gap: 20px;
+        }
+
+        /* --- Story Card Styling --- */
+        .story-card {
+            background-color: white;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #eee;
+            flex-direction: column;
+            break-inside: avoid;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .story-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Profile area */
+        .story-card .profile {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .story-card .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            margin-right: 15px;
+            overflow: hidden; /* This clips the img to a circle */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* --- NEW: Image Styling --- */
+        .story-card .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures image fills the circle */
+        }
+        
+        .story-card .info .name {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #111;
+            margin: 0;
+        }
+        .story-card .info .title {
+            font-size: 0.9em;
+            color: #007bff;
+            margin: 4px 0 0 0;
+        }
+        .story-card .quote {
+            font-size: 1em;
+            color: #444;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* --- Faded Text Effect --- */
+        .fade-text .quote {
+            max-height: 6.4em;
+            position: relative;
+            overflow: hidden;
+            pointer-events: none; 
+        }
+        .fade-text .quote::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3.2em;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+        }
+
+        /* --- Testimonial Modal (Lightbox) Styling --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-content {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 30px 40px;
+            max-width: 600px;
+            width: 90%;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: slideInAndFlip 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .modal-close {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 2.5em;
+            color: #aaa;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+        .modal-close:hover { color: #000; }
+        
+        /* Styles for the content *inside* the testimonial modal */
+        #modal-body .profile { display: flex; align-items: center; margin-bottom: 15px; }
+        #modal-body .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #e0e0e0;
+            margin-right: 15px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        #modal-body .avatar:hover {
+            transform: scale(1.1);
+        }
+        /* --- NEW: Image styling in modal avatar --- */
+        #modal-body .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        #modal-body .modal-quote {
+            font-size: 1.1em;
+            line-height: 1.7;
+            color: #333;
+            margin-top: 20px;
+        }
+
+        /* --- Modal Animations --- */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideInAndFlip {
+            from { 
+                transform: translateY(-80px) rotateY(-180deg); 
+                opacity: 0; 
+            }
+            to { 
+                transform: translateY(0) rotateY(0deg); 
+                opacity: 1; 
+            }
+        }
+
+        /* --- Image Maximize Modal Styling --- */
+        .image-modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 2000; /* Higher than the first modal */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+            cursor: pointer;
+        }
+        
+        /* --- NEW: Style for maximized image --- */
+        .image-modal-content img {
+            max-width: 90vw;
+            max-height: 90vh;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+
+        /* --- Responsiveness --- */
+        @media (max-width: 992px) {
+            .stories-grid { column-count: 2; }
+        }
+        @media (max-width: 600px) {
+            .section-header { flex-direction: column; align-items: flex-start; }
+            .header-content .title { font-size: 2em; }
+            .stories-grid { column-count: 1; }
+            .modal-content { padding: 30px 25px; }
+        }
+    </style>
+</head>
+<body>
+    <section class="success-stories-section">
+        <header class="section-header">
+            <div class="header-content">
+                <h2 class="title">Our Success Stories</h2>
+                <p class="subtitle">Explore real stories from aviation leaders and professionals who trust Skybound Aerotech for excellence in aircraft solutions and services.</p>
+            </div>
+            <button class="view-all-button">
+                View All Success Stories
+                <span class="arrow-icon">&rarr;</span>
+            </button>
+        </header>
+
+        <div class="stories-grid">
+            
+            <div class="story-card">
+                <div class="profile">
+                    <div class="avatar"><img src="image1.jpg" alt="John Matthews"></div>
+                    <div class="info">
+                        <h3 class="name">John Matthews</h3>
+                        <p class="title">Airline CEO</p>
+                    </div>
+                </div>
+                <p class="quote">Skybound Aerotech has been a game-changer for our fleet. Their aircraft reliability and maintenance services are truly unparalleled.</p>
+            </div>
+            
+            <div class="story-card">
+                <div class="profile">
+                    <div class="avatar"><img src="image2.jpg" alt="Sarah Green"></div>
+                    <div class="info">
+                        <h3 class="name">Sarah Green</h3>
+                        <p class="title">Aviation Engineer</p>
+                    </div>
+                </div>
+                <p class="quote">Collaborating with Skybound Aerotech has been an incredible journey. Their engineering solutions are ahead of the curve, always pushing the boundaries of what's possible. Whether it's their AI-powered systems or sustainable aviation technology, Skybound delivers innovation that transforms the way we design and operate aircraft. Their commitment to excellence inspires confidence at every level.</p>
+            </div>
+            
+            <div class="story-card fade-text">
+                <div class="profile">
+                    <div class="avatar"><img src="image3.jpg" alt="Carlos Vega"></div>
+                    <div class="info">
+                        <h3 class="name">Carlos Vega</h3>
+                        <p class="title">Pilot</p>
+                    </div>
+                </div>
+                <p class="quote">Flying Skybound Aerotech planes has been an amazing experience. They combine safety, comfort, and advanced technology like no other.</p>
+            </div>
+
+            <div class="story-card">
+                <div class="profile">
+                    <div class="avatar"><img src="image4.jpg" alt="Amara Singh"></div>
+                    <div class="info">
+                        <h3 class="name">Amara Singh</h3>
+                        <p class="title">Operations Manager</p>
+                    </div>
+                </div>
+                <p class="quote">Skybound Aerotech has been instrumental in streamlining our aviation operations. Their quick response times and comprehensive maintenance solutions have significantly reduced downtime, allowing us to maintain a robust schedule. The team's professionalism and expertise shine through in every interaction, making them a reliable partner that we can depend on for our growing operations.</p>
+            </div>
+            
+            <div class="story-card">
+                <div class="profile">
+                    <div class="avatar"><img src="image5.jpg" alt="James Oliver"></div>
+                    <div class="info">
+                        <h3 class="name">James Oliver</h3>
+                        <p class="title">Aerospace Consultant</p>
+                    </div>
+                </div>
+                <p class="quote">The innovation in Skybound's aircraft design sets them apart. They truly understand what the future of aviation looks like.</p>
+            </div>
+            
+            <div class="story-card fade-text">
+                <div class="profile">
+                    <div class="avatar"><img src="image6.jpg" alt="Maria Gonzalez"></div>
+                    <div class="info">
+                        <h3 class="name">Maria Gonzalez</h3>
+                        <p class="title">Flight Instructor</p>
+                    </div>
+                </div>
+                <p class="quote">Skybound Aerotech's planes are a joy to train with. Their attention to detail and safety standards is top-notch.</p>
+            </div>
+            
+            <div class="story-card">
+                <div class="profile">
+                    <div class="avatar"><img src="image7.jpg" alt="Michael Yuan"></div>
+                    <div class="info">
+                        <h3 class="name">Michael Yuan</h3>
+                        <p class="title">Logistics Director</p>
+                    </div>
+                </div>
+                <p class="quote">Their global presence and seamless support make Skybound a preferred partner. They've exceeded expectations at every stage of collaboration.</p>
+            </div>
+
+            <div class="story-card">
+                <div class="profile">
+                    <div class="avatar"><img src="image8.jpg" alt="Emma Woods"></div>
+                    <div class="info">
+                        <h3 class="name">Emma Woods</h3>
+                        <p class="title">Airline Executive</p>
+                    </div>
+                </div>
+                <p class="quote">Training future pilots on Skybound Aerotech aircraft has been a pleasure. The planes are designed with precision, offering intuitive controls and unmatched safety features. Skybound's focus on pilot-centric design enhances the learning experience for my students, while their cutting-edge technology ensures a smooth and safe training process. They've set a new standard in aviation.</p>
+            </div>
+            
+            <div class="story-card fade-text">
+                <div class="profile">
+                    <div class="avatar"><img src="image9.jpg" alt="Daniel Koch"></div>
+                    <div class="info">
+                        <h3 class="name">Daniel Koch</h3>
+                        <p class="title">Airport Manager</p>
+                    </div>
+                </div>
+                <p class="quote">Skybound Aerotech's innovations have positively impacted airport operations. Their seamless integration of technology ensures faster turnaround times, minimal disruptions, and superior passenger experiences.</p>
+            </div>
+
+        </div>
+    </section>
+
+    <div id="testimonial-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <div id="modal-body">
+                </div>
+        </div>
+    </div>
+
+    <div id="image-modal" class="image-modal-overlay">
+        <div id="image-modal-content" class="image-modal-content">
+            </div>
+    </div>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            
+            // --- Testimonial Modal Elements ---
+            const testimonialModal = document.getElementById("testimonial-modal");
+            const modalBody = document.getElementById("modal-body");
+            const closeModalBtn = document.querySelector(".modal-close");
+            const storyCards = document.querySelectorAll(".story-card");
+            
+            // --- Image Modal Elements ---
+            const imageModal = document.getElementById("image-modal");
+            const imageModalContent = document.getElementById("image-modal-content");
+
+            // --- Function to open the Testimonial Modal ---
+            function openTestimonialModal(card) {
+                const profileHTML = card.querySelector(".profile").innerHTML;
+                const quoteHTML = card.querySelector(".quote").innerHTML;
+
+                modalBody.innerHTML = `
+                    <div class="profile">${profileHTML}</div>
+                    <p class="modal-quote">${quoteHTML}</p>
+                `;
+
+                testimonialModal.style.display = "flex";
+                document.body.classList.add("modal-open");
+
+                // --- Add click listener for the avatar *inside* the modal ---
+                modalBody.querySelector('.avatar').addEventListener('click', (e) => {
+                    // Get the image 'src' from the avatar's img tag
+                    const avatarSrc = e.currentTarget.querySelector('img').src;
+                    openImageModal(avatarSrc);
+                });
+            }
+
+            // --- Function to close the Testimonial Modal ---
+            function closeTestimonialModal() {
+                testimonialModal.style.display = "none";
+                document.body.classList.remove("modal-open");
+            }
+
+            // --- Function to open the Image Modal ---
+            function openImageModal(imageSrc) {
+                // Create an <img> tag for the modal
+                imageModalContent.innerHTML = `<img src="${imageSrc}" alt="Maximized Profile">`;
+                imageModal.style.display = "flex";
+            }
+
+            // --- Function to close the Image Modal ---
+            function closeImageModal() {
+                imageModal.style.display = "none";
+                imageModalContent.innerHTML = ""; // Clear content
+            }
+
+            // --- Event Listeners for Testimonial Modal ---
+            storyCards.forEach(card => {
+                card.addEventListener("click", () => {
+                    openTestimonialModal(card);
+                });
+            });
+
+            closeModalBtn.addEventListener("click", closeTestimonialModal);
+            testimonialModal.addEventListener("click", (event) => {
+                if (event.target === testimonialModal) {
+                    closeTestimonialModal();
+                }
+            });
+
+            // --- Event Listener for Image Modal ---
+            imageModal.addEventListener("click", () => {
+                // Click anywhere on the image modal to close it
+                closeImageModal();
+            });
+
+        });
+    </script>
+
+</body>
+</html>
